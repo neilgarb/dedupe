@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,6 +24,7 @@ func visit(path string, f os.FileInfo, e error) error {
 	} else {
 		out, err = exec.Command("md5sum", path).Output()
 	}
+	// TODO: windows?
 	if err != nil {
 		return nil
 	}
@@ -36,17 +38,12 @@ func visit(path string, f os.FileInfo, e error) error {
 	return nil
 }
 
-func usage() {
-	fmt.Println("Usage: dedupe <path>")
-}
-
 func main() {
 	if len(os.Args) < 2 {
-		usage() 
-		return
+		log.Fatalf("Usage: dedupe <path>")
 	}
 	err := filepath.Walk(os.Args[1], visit)
 	if err != nil {
-		panic(err)
+		log.Fatalf(err)
 	}
 }
